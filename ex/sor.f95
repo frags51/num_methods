@@ -1,12 +1,12 @@
-subroutine gJacobi(a, n, x, tol)
+subroutine sor(a, n, x, tol)
 	implicit none
 
     integer, intent(in) :: n
     real, dimension(n,n+1), intent(inout) :: a
     real, dimension(n), intent(inout) :: x
     real, intent(in) :: tol
-
-    real, dimension(n) :: xP ! Stores previous values of x.
+    real :: w=1.2 ! The weight
+    real, dimension(n) :: xP, xGs ! Stores previous values of x.
 
     integer :: ic = 0, jc = 0, k=0, i=0,j=0, flag=1, lCtr = 0 
     real :: sum1 = 0
@@ -14,6 +14,7 @@ subroutine gJacobi(a, n, x, tol)
     !initialize xP
     do i=1, n
     	xP(i) = x(i)
+      xGs(i) = x(i)
     end do
 
 
@@ -22,10 +23,11 @@ subroutine gJacobi(a, n, x, tol)
     	sum1 = 0
     	do j=1,n
     		if (.not. j .eq. i) then
-    		sum1 = sum1 + xP(j)*a(i, j)
+    		sum1 = sum1 + xGs(j)*a(i, j) ! Use new x's value here only
     		end if
     	end do
-    	x(i) = (a(i, n+1) -sum1)/a(i,i) 
+    	xGs(i) = (a(i, n+1) -sum1)/a(i,i) ! GS
+      x(i) = xP(i) + w*(xGs(i)-xP(i))  ! Sor
     	end do
     	
     	! Now check for tolerance
@@ -47,5 +49,5 @@ subroutine gJacobi(a, n, x, tol)
     	end do
     end do !lCtr loop
     print *, "Loop Counter: ", lCtr
-    
+
 end subroutine

@@ -57,7 +57,7 @@ program main
         print *, "Enter Tolerance: "
         read (*,*) tol
 
-        call gSiedel(a, n, x, tol)
+        call sor(a, n, x, tol)
     	
         call printMatrix(x, n, 1)
 

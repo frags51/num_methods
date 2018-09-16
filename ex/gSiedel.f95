@@ -1,4 +1,4 @@
-subroutine gJacobi(a, n, x, tol)
+subroutine gSiedel(a, n, x, tol)
 	implicit none
 
     integer, intent(in) :: n
@@ -22,7 +22,7 @@ subroutine gJacobi(a, n, x, tol)
     	sum1 = 0
     	do j=1,n
     		if (.not. j .eq. i) then
-    		sum1 = sum1 + xP(j)*a(i, j)
+    		sum1 = sum1 + x(j)*a(i, j) ! Use new x's value here only
     		end if
     	end do
     	x(i) = (a(i, n+1) -sum1)/a(i,i) 
@@ -47,5 +47,5 @@ subroutine gJacobi(a, n, x, tol)
     	end do
     end do !lCtr loop
     print *, "Loop Counter: ", lCtr
-    
+
 end subroutine
