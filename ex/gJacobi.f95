@@ -4,12 +4,12 @@ subroutine gJacobi(a, n, x, tol)
     integer, intent(in) :: n
     real, dimension(n,n+1), intent(inout) :: a
     real, dimension(n), intent(inout) :: x
-    real, dimension(n), intent(in) :: tol
+    real, intent(in) :: tol
 
     real, dimension(n) :: xP ! Stores previous values of x.
 
-    integer :: ic = 0, jc = 0, k=0, i=0,j=0, flag=1
-    real :: sum1 = 0, lCtr = 0 
+    integer :: ic = 0, jc = 0, k=0, i=0,j=0, flag=1, lCtr = 0 
+    real :: sum1 = 0
 
     !initialize xP
     do i=1, n
@@ -17,7 +17,8 @@ subroutine gJacobi(a, n, x, tol)
     end do
 
 
-    do lCtr = 0, 10000
+    do lCtr = 1, 10000
+    	print *, lCtr
     	do i=1, n
     	sum1 = 0
     	do j=1,n
@@ -31,7 +32,7 @@ subroutine gJacobi(a, n, x, tol)
     	! Now check for tolerance
     	flag = 1
    		do i = 1, n
-   			if( ( .not. (xP(i) .eq. 0) ) .and. abs(xP(i)-x(i))/xP(i) > tol) then 
+   			if(( .not. (xP(i) .eq. 0) ) .and. (abs((xP(i)-x(i))/xP(i)) .gt. tol)) then 
    				flag = 0
    			end if
    		end do
