@@ -1,30 +1,27 @@
-!With Pivoting: make pivot element non zero.
-subroutine gE(a, n, x)
-    implicit none
-    
-        integer, intent(in) :: n
-        real, dimension(n,n+1), intent(inout) :: a
-        real, dimension(n), intent(inout) :: x
-    
-        real :: pivot, factor
-        integer :: pivRow, pivCol, stepCount
-        integer :: rowCount, colCount
+subroutine gJordan(a, n, x)
+	implicit none
 
-        integer :: ic = 0, jc = 0, pRowCpy, pColCpy, temp2=0
-        real :: max1 = 0, max2 = 0, temp=0 
-        integer, dimension(n) :: mapper ! If cols are changed to make pivot non-zero, Xi's will also be shuffled.
-        ! Need this to print them in correct order
- 
-        do ic = 1, n
-            mapper(ic) = ic
-        end do
+    integer, intent(in) :: n
+    real, dimension(n,n+1), intent(inout) :: a
+    real, dimension(n), intent(inout) :: x
 
-        do stepCount = 1, n-1, 1
+    real :: pivot, factor
+    integer :: pivRow, pivCol, stepCount
+    integer :: rowCount, colCount
+    integer :: ic = 0, jc = 0, pRowCpy, pColCpy, temp2=0, k=0, i=0,j=0
+    real :: max1 = 0, max2 = 0, temp=0 
+    integer, dimension(n) :: mapper ! If cols are changed to make pivot non-zero, Xi's will also be shuffled.
+    ! Need this to print them in correct order
+    do ic = 1, n
+        mapper(ic) = ic
+    end do
+    	 ! row LOop
+        do stepCount = 1, n, 1
             pivRow = stepCount
             pivCol = stepCount
             pivot = a(pivRow, pivCol)
             
-            ! pivot is zero
+            ! pivot is zero -> Swapping etc
             if(pivot .eq. 0) then
                 ic = pivRow
                 jc = pivCol
@@ -71,22 +68,39 @@ subroutine gE(a, n, x)
                 end if ! CHange row
                 
             end if ! pivot equals zero
+
+            !actual row ops
             pivot = a(pivRow, pivCol)
-            do rowCount = pivRow+1, n 
-                factor = a(rowCount, pivCol)/pivot
+            temp = 0.0
+            ! First do col1, then col2, and so on....
+
+            	do colCount = 1, n
+            		if (.not. (stepCount .eq. colCount)) then
+            			temp = a(colCount, stepCount)/a(stepCount, stepCount)
+            			do k = 1, n+1 ! Sweep
+            				a(colCount, k) = a(colCount, k) - temp*a(stepCount, k)
+            			end do
+            		endif
+            	end do
+            
+
+            ! Make Diagonal elements as unity
+            !do rowCount=1, n
+            !	a(rowCount, n+1) = a(rowCount, n+1)/a(rowCount, rowCount)
+            !end do
+
+
+            ! Swap back any X's that were changed due to pivoting
+
     
-                do colCount = pivCol, n+1
-                    a(rowCount, colCount) = a(rowCount, colCount) - factor*a(pivRow, colCount)
-                end do ! c
-    
+        end do ! Step Count    
+
+            ! Put values of X
+            do rowCount=1, n
+            	x(rowCount) = a(rowCount, n+1)/a(rowCount, rowCount)
             end do
-    
-        end do
-    
-        call backSub(a, n, x)
-    
-        ! Now change back x's : Their order was changed When Changing Columns..
-        do ic=1, n
+
+         	do ic=1, n
             if(.not. (mapper(ic) .eq. ic)) then
             
                 temp = x(mapper(ic))
@@ -96,33 +110,5 @@ subroutine gE(a, n, x)
                 mapper(ic) = ic
                 mapper(temp2) = temp2
             end if
-        end do
-
-end subroutine gE
-    
-subroutine backSub(a, n, x)
-    implicit none
-    
-        integer, intent(in) :: n
-        real, dimension(n,n+1), intent(inout) :: a
-        real, dimension(n), intent(inout) :: x
-    
-        integer :: rowCount, colCount
-        real::summation
-    
-        x(n) = a(n,n+1)/a(n,n)
-
-        do rowCount = n-1, 1, -1
-            do colCount = n+1,1,-1
-                summation = summation + a(rowCount, colCount)*x(colCount)
-            end do
-            x(rowCount) = (a(rowCount, n+1) - summation)/a(rowCount, rowCount)
-            summation = 0
-        end do 
-
-        !print
-        !do rowCount=1, n
-        !    print *, x(rowCount)
-        !end do
-end subroutine backSub
-
+       		end do
+end subroutine
