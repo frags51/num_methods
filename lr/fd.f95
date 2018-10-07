@@ -3,10 +3,9 @@ implicit none
 
 
 integer :: n = 4, i, j
-real, allocatable, dimension(:,:) ::  A, AAug
-real, allocatable, dimension(:) :: x, y, xMat,B
+real, allocatable, dimension(:) :: x, y, xMat
 real,allocatable,  dimension(:) :: coeff
-real :: fact, nth, alpha, fun, r1, r2, mf
+real :: fact, alpha, fun, r1, r2, mf
 
 allocate(xMat(n))
 allocate(x(n))
